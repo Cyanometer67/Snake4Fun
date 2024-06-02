@@ -10,7 +10,7 @@ This is a classic Snake game where players control a snake to eat food and grow 
 Each food item increases the score based on the following formula:
 
 ```plaintext
-Single Score = 10 + 2 * Speed Level
+Single Score = 10 + 2 * Current_Speed_Level
 ```
 
 ## Game Modes
