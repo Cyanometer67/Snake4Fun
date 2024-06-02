@@ -20,7 +20,6 @@ Single Score = 10 + 2 * Current_Speed_Level
 
 ## Controls
 - **Movement**: Use arrow keys to control the snake.
-- **Speed Levels**: Choose from 1 to 5.
 - **Pause**: Press the spacebar to pause the game.
 
 ## Pause Menu
