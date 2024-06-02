@@ -6,6 +6,7 @@ import pygame
 import sys
 import random
 import os
+import numpy as np
 
 pygame.init()
 
@@ -22,10 +23,33 @@ red = (255, 0, 0)
 green = (0, 255, 0)
 klein_blue = (0, 47, 167)
 
-
 # 设置时钟
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((screen_width, screen_height + display_height))
+
+# 生成音效
+def generate_sound(frequency, duration, volume, waveform='sine'):
+    sample_rate = 44100
+    n_samples = int(sample_rate * duration)
+    t = np.linspace(0, duration, n_samples, endpoint=False)
+    
+    if waveform == 'sine':
+        wave = 0.5 * np.sin(2 * np.pi * frequency * t)
+    elif waveform == 'square':
+        wave = 0.5 * np.sign(np.sin(2 * np.pi * frequency * t))
+    elif waveform == 'sawtooth':
+        wave = 0.5 * (2 * (t * frequency - np.floor(t * frequency + 0.5)))
+    
+    sound = np.int16(wave * volume * 32767)
+    stereo_sound = np.column_stack((sound, sound))  # 创建双声道
+    return pygame.sndarray.make_sound(stereo_sound)
+
+# 吃食物音效 - 短促的高频音
+eat_sound = generate_sound(800, 0.1, 0.5, 'sine')
+
+# gameover音效 - 低频的递减音
+gameover_sound = generate_sound(150, 0.5, 0.5, 'sawtooth')
+
 
 class Snake:
     def __init__(self):
@@ -230,6 +254,7 @@ class Game:
         pygame.display.flip()
         
         self.game_over_flag = True
+        gameover_sound.play()  # 播放gameover音效
         while self.game_over_flag:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -348,6 +373,7 @@ class Game:
                 basic_score = 10
                 self.score += int(basic_score * (1 + 0.2 * self.speed_level))
                 self.food.spawn_food()
+                eat_sound.play()  # 播放吃食物音效
             else:
                 self.snake.grow()
 
